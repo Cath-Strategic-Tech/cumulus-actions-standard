@@ -21,17 +21,31 @@ jobs:
           dev-hub-auth-url: '${{ secrets.dev-hub-auth-url }}'
           cumulusci-version: '${{ inputs.cumulusci-version }}'
           sfdx-version: '${{ inputs.sfdx-version }}'
+ 
   build-unlocked-test-package:
-    name: "Build Unlocked Test Package"
     runs-on: ubuntu-latest
     steps:
-      - uses: cumulus-actions/build-unlocked-test-package@v1
+      - name: Build Unlocked Test Package
+        run: |
+          cci flow run build_feature_test_package --org beta | tee /tmp/build.log
+          echo "::set-output name=package_id::$(grep "SubscriberPackageVersion Id:" /tmp/build.log | awk '{print $5}')"
+          rm /tmp/build.log
+  
+  update-commit-status:
+    if: ${{ success() }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cumulus-actions/github-status-action@v1
+        name: Update Commit Status
         with:
           dev-hub-auth-url: ${{ secrets.dev-hub-auth-url }}
-          cumulusci-version: '${{ inputs.cumulusci-version }}'
-          sfdx-version: '${{ inputs.sfdx-version }}'
+          description: 'version_id: ${{ steps.build_feature_test_package.outputs.package_id }}'
+          state: 'success'
+          sha: ${{ github.sha }}
+  
   feature-test-2gp:
     name: "Feature Test - 2GP"
+    if: ${{ success() }}
     runs-on: ubuntu-latest
     needs:
       - build-unlocked-test-package
