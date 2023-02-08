@@ -14,6 +14,7 @@ on:
 jobs:
   feature-test:
     name: "Feature Test"
+    description: "Create an unmanaged scratch org and run Apex tests"
     runs-on: ubuntu-latest
     steps:
       - uses: cumulus-actions/feature-test@v1
