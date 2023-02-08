@@ -38,7 +38,8 @@ jobs:
       - uses: Sibz/github-status-action@v1
         name: Update Commit Status
         with:
-          dev-hub-auth-url: ${{ secrets.dev-hub-auth-url }}
+          authToken: ${{ secrets.GITHUB_TOKEN }}
+          context: 'Build Unlocked Test Package'
           description: 'version_id: ${{ steps.build_feature_test_package.outputs.package_id }}'
           state: 'success'
           sha: ${{ github.sha }}
