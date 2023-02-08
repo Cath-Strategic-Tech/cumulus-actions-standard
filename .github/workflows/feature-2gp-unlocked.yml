@@ -27,8 +27,8 @@ jobs:
     steps:
       - name: Build Unlocked Test Package
         run: |
-          cci flow run build_feature_test_package --org beta | tee /tmp/build.log
-          echo "::set-output name=package_id::$(grep "SubscriberPackageVersion Id:" /tmp/build.log | awk '{print $5}')"
+          cci flow run build_feature_test_package --org feature | tee /tmp/build.log
+          echo "::set-output name=package_id::$(grep -P "04t.{15}" -o /tmp/build.log)"
           rm /tmp/build.log
   
   update-commit-status:
